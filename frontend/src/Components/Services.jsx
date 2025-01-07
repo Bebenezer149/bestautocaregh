@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 const Services = () => {
   const services = [
     // Below are objects which will be mapped unto to create the services cards.
@@ -121,9 +122,11 @@ const Services = () => {
                     <p className="text-gray-300">{service.duration}</p>
                   </div>
                 </div>
+                <Link to="/Contact">
                 <button className="w-full mt-6 bg-[#FFD700] text-gray-900 py-2 px-4 rounded-lg hover:bg-[#FFD700]/90 transition-colors font-semibold">
                   Book Now
                 </button>
+                </Link>
               </div>
             </div>
           ))}
@@ -138,9 +141,11 @@ const Services = () => {
           <p className="text-gray-300 mb-8 max-w-2xl mx-auto">
             Cannot find what you are looking for? Contact us for a custom service package tailored to your needs.
           </p>
+          <Link to="/Contact">
           <button className="bg-[#FFD700] text-gray-900 px-8 py-3 rounded-full hover:bg-[#FFD700]/90 transition-colors font-semibold">
-            Contact Us
+           Book Service Now
           </button>
+          </Link>
         </div>
       </div>
     </div>
