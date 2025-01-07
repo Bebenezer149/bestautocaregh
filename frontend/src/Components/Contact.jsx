@@ -8,6 +8,15 @@ const Contact = () => {
     date: "",
     time: "",
   });
+  const [isLoading, setIsLoading] = useState(false);
+  const [notification, setNotification] = useState({ show: false, message: '', type: '' });
+
+  const showNotification = (message, type = 'success') => {
+    setNotification({ show: true, message, type });
+    setTimeout(() => {
+      setNotification({ show: false, message: '', type: '' });
+    }, 3000);
+  };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -22,25 +31,25 @@ const Contact = () => {
     const { user_name, phone, service_type, date, time } = formData;
 
     if (!user_name.trim() || !phone.trim() || !service_type.trim() || !date.trim() || !time.trim()) {
-      alert("Please fill in all fields");
+      showNotification('Please fill in all fields', 'error');
       return;
     }
 
-    console.log("Form submitted:", formData);
-
-    const postData =()=>{
-      const url='http://localhost:3000/api/addBookings';
-      fetch(url, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(formData)
-      })
-      .then(response => response.json())
-      .then(data => {
+    const postData = async () => {
+      setIsLoading(true);
+      const url = 'https://bestautocaregh-app.onrender.com/api/addBookings';
+      try {
+        const response = await fetch(url, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(formData)
+        });
+        
+        const data = await response.json();
         console.log(data);
-        alert('Booking successful');
+        showNotification('Booking Successful ! You will be contacted for furher details');
         setFormData({
           user_name: "",
           phone: "",
@@ -48,17 +57,42 @@ const Contact = () => {
           date: "",
           time: "",
         });
-      })
-      .catch(error => {
+      } catch (error) {
         console.error(error);
-      });
-    }
+        showNotification('Failed to book appointment. Please try again.', 'error');
+      } finally {
+        setIsLoading(false);
+      }
+    };
 
     postData();
   };
 
   return (
     <div className="flex flex-col min-h-screen bg-gray-900 text-white">
+      {notification.show && (
+        <div
+          className={`fixed top-4 right-4 p-4 rounded-lg shadow-lg transition-all duration-500 ${
+            notification.type === 'error'
+              ? 'bg-red-500 text-white'
+              : 'bg-green-500 text-white'
+          }`}
+        >
+          <div className="flex items-center">
+            {notification.type === 'error' ? (
+              <svg className="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            ) : (
+              <svg className="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
+              </svg>
+            )}
+            <p className="font-medium">{notification.message}</p>
+          </div>
+        </div>
+      )}
+
       <main className="flex-1">
         <div className="relative py-16 md:py-24">
           <div className="container mx-auto px-6">
@@ -170,7 +204,13 @@ const Contact = () => {
                   type="submit"
                   className="w-full bg-[#FFD700] text-gray-900 py-2 px-4 rounded-lg hover:bg-[#FFD700]/90 transition-colors font-semibold"
                 >
-                  Book Appointment
+                 {
+                  isLoading ? (
+                    <h1>Loading...</h1>
+                  ): (
+                    <h1>Book Appointment  </h1>
+                  )
+                 }
                 </button>
               </form>
             </div>
