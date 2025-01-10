@@ -12,6 +12,14 @@ const bookingSchema = new Schema({
         required: true
 
     },
+    service_type:{
+        type: String,
+        required: true
+    },
+    date:{
+        type: String,
+        required: true
+    }
    
 },{timestamps:true})
 
